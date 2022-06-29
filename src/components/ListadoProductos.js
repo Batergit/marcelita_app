@@ -2,34 +2,68 @@
 import React, {useContext} from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan, faRotate } from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan, faRotate, faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db, storage } from '../firebase/firebaseConfig';
 import { ref, deleteObject } from 'firebase/storage';
 // @ts-ignore
 import { contexto } from './contextos/contexto';
 import Input from './Input';
+import { utils, write } from 'xlsx';
+import { saveAs } from 'file-saver';
 
 // @ts-ignore
 const ListadoProductos = () => {
     const Context = useContext(contexto);
     
-    console.log(Context)
     return (
         <>
             <div className='row'>
-                <div className='col-12'>
+                <div className='col-12 d-flex justify-content-between mb-2'>
                     <h2>Lista de Productos</h2>
-                    <hr />
+                    <button
+                        type='button'
+                        className="btn btn-outline-success"
+                        onClick={(e) => {
+                            e.preventDefault()
+                            var fecha = new Date()
+                            var wb = utils.book_new();
+                            var ws_data = [["Producto", "Marca", "Tamaño", "Categoría", "Descripcion"]]
+
+                            Context.productos.map((producto) => {
+                                ws_data.push([ producto.nombre, producto.marca, producto.size, producto.categoria, producto.descripcion ])
+                            })
+
+                            wb.Props = {
+                                Title: "Productos_Bodega_Marcelita",
+                                Author: "Marcelita_app",
+                                CreatedDate: new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDay())
+                            };
+
+                            wb.SheetNames.push("Productos")
+
+                            var ws = utils.aoa_to_sheet(ws_data)
+                            wb.Sheets["Productos"] = ws;
+                            var wbout = write(wb, {bookType: 'xlsx',  type: 'binary'})
+                            
+                            function s2ab(s) { 
+                                var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+                                var view = new Uint8Array(buf);  //create uint8array as viewer
+                                for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+                                return buf;    
+                            }
+
+                            saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'LISTADO_PRODUCTOS.xlsx');
+                        }}
+                    ><FontAwesomeIcon icon={faFileExcel} /></button>
                 </div>
+                <hr />
             </div>
             <div className='row mt-4'>
                 <form className='col-12 mb-4'>
                     {Context.productos.map((producto, 
 // @ts-ignore
                     index) => {
-                        console.log(producto)
-                        
                         return <div  key={producto.id} className='row d-flex justify-content-center mb-4'>
 
                                 <div className='col-4 col-md-2 col-lg-2 d-flex align-items-start mb-md-0 mb-4'>
@@ -85,7 +119,6 @@ const ListadoProductos = () => {
                                                 aria-label="Default select example"
                                                 onChange={(e) => {
                                                     document.getElementById(`stock${producto.id}`).setAttribute("value", e.target.value)
-                                                    console.log(document.getElementById(`stock${producto.id}`))
                                                 }}
                                             >
                                             {

@@ -1,51 +1,64 @@
 // @ts-nocheck
-import React, {useState, useEffect} from 'react';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faImage, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
-import { db, storage } from '../firebase/firebaseConfig';
-import { collection, addDoc, onSnapshot, updateDoc, doc } from 'firebase/firestore';
-import { Form, FormCheck } from 'react-bootstrap';
+import React, {useState, useEffect, useContext} from 'react';
+import { contexto } from './contextos/contexto';
+import { db } from '../firebase/firebaseConfig';
+import { updateDoc, doc } from 'firebase/firestore';
+import InputHora from './InputHora';
 
 const Horario = () => {
-    const[apertura, setApertura] = useState(true)
-    const[labelInterruptor, setLabelInterruptor] = useState("Abrir Tienda")
-
-    useEffect(() => {
-        onSnapshot(
-            collection(db, 'Horario'),
-            (snapshot) => {
-                setApertura(snapshot.docs[0].data()["Apertura"])
-            }
-        )
-    }, [])
-
+    const Context = useContext(contexto)
+    const dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"]
+    var hora = "";
     return (
         <>
             <div className='row'>
-                <div className='col-12'>
-                    <h2>Estado Apertura de la tienda</h2>
+                <div className='col-12 mt-3'>
+                    <h2>Horario de la tienda</h2>
                     <hr />
                 </div>
             </div>
             <div className='row'>
                 <div className='col-12'>
-                    <form className='form-check form-switch'>
-                        <input
-                            type="checkbox"
-                            value={apertura}
-                            className="form-check-input"
-                            id="flexSwitchCheckChecked"
-                            onChange={(e) => {
-                                e.preventDefault()
-                                setApertura(!apertura)
-                                updateDoc(doc(db, "Horario", "IxTQeeEAkbsIUXrP9m3W"), {
-                                    Apertura: !apertura
+                    <table className='table table-striped table-hover'>
+                        <thead>
+                            <tr className='table-dark'>
+                                <th scope="col">Día</th>
+                                <th scope="col">Hora Inicio</th>
+                                <th scope="col">Hora Término</th>
+                            </tr>
+                        </thead>
+                        <tbody className=''>
+                            {dias.map((dia) => {
+                                return Context.horario.map((diaHorario) => {
+                                    if(dia === diaHorario.id) {
+                                        return <tr>
+                                            <th scope='row'>
+                                                <label>{dia}</label>
+                                            </th>
+                                            <td>
+                                                <InputHora
+                                                    horas={diaHorario.horaPartida}
+                                                    minutos={diaHorario.minutoPartida}
+                                                    dia={diaHorario.id}
+                                                    opcion={"Inicio"}
+                                                />
+                                            </td>
+                                            <td>
+                                                <InputHora
+                                                    horas={diaHorario.horaTermino}
+                                                    minutos={diaHorario.minutoTermino}
+                                                    dia={diaHorario.id}
+                                                    opcion={"Termino"}
+                                                />
+                                            </td>
+                                            
+                                        </tr>
+                                    }
                                 })
-                            }}
-                        />
-                        <label class="form-check-label" for="flexSwitchCheckChecked">{labelInterruptor}</label>
-                    </form>
+                            })}
+                        </tbody>
+
+                    </table>
                 </div>
             </div>
         </>

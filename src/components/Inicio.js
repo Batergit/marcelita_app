@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import banner from './../img/banner.jpg';
 import MenuCategoria from './MenuCategoria';
 import QuienesSomos from './QuienesSomos';
-import Contacto from './Contacto';
+import HorarioUbicacion from './HorarioUbicacion';
 import { onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../firebase/firebaseConfig';
 
@@ -13,9 +13,9 @@ const Inicio = () => {
 
     useEffect(() => {
         onSnapshot(
-            collection(db, 'Horario'),
+            collection(db, 'Apertura'),
             (snapshot) => {
-                setApertura(snapshot.docs[0].data()["Apertura"])
+                setApertura(snapshot.docs[0].data()["estado"])
             }
         )
     }, [])
@@ -27,7 +27,7 @@ const Inicio = () => {
                     <button onClick={() => console.log("Menu")}>Menu</button>
                     <button onClick={() => CambiarItemMenu(1)}>Inicio</button>
                     <button onClick={() => CambiarItemMenu(2)}>Quienes Somos</button>
-                    <button onClick={() => CambiarItemMenu(3)}>Contacto</button>
+                    <button onClick={() => CambiarItemMenu(3)}>Horarios y Ubicación</button>
                 </BarraNavegacion>
 
                 <Portada>
@@ -53,14 +53,14 @@ const Inicio = () => {
                 :itemMenu === 2 ?
                     <QuienesSomos />
                 :
-                    <Contacto />
+                    <HorarioUbicacion />
                 }
-            </div>
-            
+            </div>  
             
         </ContenedorApp>
     );
 }
+
 const ContenedorApp = styled.div`
     background: white;
 `

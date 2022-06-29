@@ -8,6 +8,9 @@ const contexto = React.createContext();
 const Proveedor = ({children}) => {
     const [productos, cambiarProductos] = useState([]);
     const [categorias, cambiarCategorias] = useState([]);
+    const [apertura, cambiarApertura] = useState([]);
+    const [horario, cambiarHorario] = useState([]);
+    const [usuarios, cambiarUsuarios] = useState([]);
     const [productoimageList, setProductoimageList] = useState([]);
     const [categoriaimageList, setCategoriaimageList] = useState([]);
 
@@ -39,9 +42,6 @@ const Proveedor = ({children}) => {
                 })
             }
         )
-    }, [])
-
-    useEffect(() => {
         onSnapshot(
             collection(db, 'Categorias'),
             (snapshot) => {
@@ -66,13 +66,47 @@ const Proveedor = ({children}) => {
                 })
             }
         )
+        onSnapshot(
+            collection(db, 'Apertura'),
+            (snapshot) => {
+                const arrayApertura = snapshot.docs.map((apertura) => {
+                    return {...apertura.data(), id:apertura.id}
+                })
+                cambiarApertura(arrayApertura)
+            }
+        )
+        onSnapshot(
+            collection(db, 'Horario'),
+            (snapshot) => {
+                const arrayHorario = snapshot.docs.map((horario) => {
+                    return {
+                        ...horario.data(), id:horario.id
+                    }
+                })
+                cambiarHorario(arrayHorario)
+            }
+        )
+        onSnapshot(
+            collection(db, 'Usuarios'),
+            (snapshot) => {
+                const arrayUsuarios = snapshot.docs.map((usuario) => {
+                    return {
+                        ...usuario.data(), id:usuario.id
+                    }
+                })
+                cambiarUsuarios(arrayUsuarios)
+            }
+        )
     }, [])
-    
+
     return (
         <contexto.Provider 
             value={{
                 productos: productos,
                 categorias: categorias,
+                apertura: apertura,
+                horario: horario,
+                usuarios: usuarios,
                 productoimageList: productoimageList,
                 categoriaimageList: categoriaimageList
             }}>

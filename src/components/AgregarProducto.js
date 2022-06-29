@@ -97,9 +97,9 @@ const AgregarProducto = () => {
                     </label>
                 </div>
                     
-                <div class="d-grid col-12 mx-auto mt-2">
+                <div className="d-grid col-12 mx-auto mt-2">
                     <button
-                        class="btn btn-primary"
+                        className="btn btn-primary"
                         onClick={(e) => {
                             e.preventDefault()
                             

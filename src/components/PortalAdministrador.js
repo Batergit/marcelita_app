@@ -6,24 +6,36 @@ import AgregarProducto from './AgregarProducto';
 import ListadoProductos from './ListadoProductos';
 import Horario from './Horario';
 import ItemMenuAdmin from './ItemMenuAdmin';
-import { faCartShopping, faCalendar, faCertificate } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faCalendar, faCertificate, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { collection, onSnapshot } from "firebase/firestore";
 import {db, storage} from './../firebase/firebaseConfig';
 import {listAll, ref} from 'firebase/storage';
+import SwitchEstadoApertura from './SwitchEstadoApertura';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const PortalAdministrador = () => {
+const PortalAdministrador = (props) => {
     const [categorias, cambiarCategorias] = useState([]);
     const [productos, cambiarProductos] = useState([]);
-    const [opcion, setOpcion] = useState("Horario")
+    const [opcion, setOpcion] = useState("Productos")
     const [imageList, setImageList] = useState(new Map())
 
     return (
         <div className='container mt-4 shadow bg-body rounded'>
             <div className='row'>
-                <div className='col-12'>
+                <div className='col-12 d-flex justify-content-between'>
                     <h1>Portal de Administrador</h1>
-                    <hr />
+                    <button 
+                        className='btn btn-danger'
+                        type='button'
+                        onClick={(e) => {
+                            e.preventDefault()
+                            console.log(props)
+                            props.setLog(false)
+                        }}
+                        
+                    ><FontAwesomeIcon icon={faRightFromBracket} /></button>
                 </div>
+                <hr />
             </div>
             <div className='row'>
                 <div className='col-md-4 col-12 mb-3'>
@@ -81,6 +93,10 @@ const PortalAdministrador = () => {
                 </>
             :
                 <>
+                    <ContenedorTareas>
+                        <SwitchEstadoApertura />
+                    </ContenedorTareas>
+
                     <ContenedorTareas>
                         <Horario />
                     </ContenedorTareas>
